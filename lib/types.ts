@@ -1,5 +1,5 @@
 export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue";
-export type JobStatus = "scheduled" | "in_progress" | "completed" | "cancelled";
+export type JobStatus = "draft" | "scheduled" | "in_progress" | "completed" | "cancelled";
 
 export interface Client {
   id: string;
@@ -13,12 +13,17 @@ export interface Client {
 
 export interface Job {
   id: string;
-  client_id: string;
+  client_id: string | null;
+  client_name_raw: string | null;
+  timesheet_id: string | null;
   date: string;
   description: string | null;
   hours: number | null;
   crew_size: number | null;
   source_photo_url: string | null;
+  materials: { material: string; quantity: string }[];
+  suggested_amount: number | null;
+  field_confidence: Record<string, "high" | "low">;
   status: JobStatus;
   created_at: string;
 }
@@ -54,5 +59,6 @@ export interface Timesheet {
   id: string;
   photo_path: string;
   status: string;
+  error_message: string | null;
   created_at: string;
 }
