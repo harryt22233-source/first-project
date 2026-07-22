@@ -49,3 +49,10 @@ export interface Settings {
   hourly_rate: number;
   next_invoice_number: number;
 }
+
+export interface Timesheet {
+  id: string;
+  photo_path: string;
+  status: string;
+  created_at: string;
+}
