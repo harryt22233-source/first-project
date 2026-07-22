@@ -89,9 +89,10 @@ export async function processTimesheet(timesheetId: string) {
     const base64 = Buffer.from(arrayBuffer).toString("base64");
     const mediaType = fileBlob.type || "image/jpeg";
 
-    const [{ data: settings }, { data: clients }] = await Promise.all([
+    const [{ data: settings }, { data: clients }, { data: aliases }] = await Promise.all([
       supabase.from("settings").select("hourly_rate").eq("id", 1).single(),
       supabase.from("clients").select("id, name"),
+      supabase.from("client_aliases").select("raw_name, client_id"),
     ]);
     const hourlyRate = settings?.hourly_rate ?? 60;
 
@@ -130,14 +131,14 @@ export async function processTimesheet(timesheetId: string) {
     }
 
     for (const entry of parsed.entries ?? []) {
-      const matchedClient = (clients ?? []).find(
-        (c) => c.name.trim().toLowerCase() === (entry.client_name || "").trim().toLowerCase(),
-      );
+      const rawName = (entry.client_name || "").trim().toLowerCase();
+      const matchedClient = (clients ?? []).find((c) => c.name.trim().toLowerCase() === rawName);
+      const aliasMatch = (aliases ?? []).find((a) => a.raw_name.trim().toLowerCase() === rawName);
       const hours = Number(entry.hours) || 0;
       const crewSize = Number(entry.crew_size) || 0;
 
       await supabase.from("jobs").insert({
-        client_id: matchedClient?.id ?? null,
+        client_id: matchedClient?.id ?? aliasMatch?.client_id ?? null,
         client_name_raw: entry.client_name ?? null,
         timesheet_id: timesheetId,
         date: parseDateOrToday(entry.date),

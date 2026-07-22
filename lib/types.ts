@@ -1,5 +1,12 @@
 export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue";
-export type JobStatus = "draft" | "scheduled" | "in_progress" | "completed" | "cancelled";
+export type JobStatus =
+  | "draft"
+  | "approved"
+  | "invoiced"
+  | "scheduled"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
 
 export interface Client {
   id: string;
@@ -60,5 +67,12 @@ export interface Timesheet {
   photo_path: string;
   status: string;
   error_message: string | null;
+  created_at: string;
+}
+
+export interface ClientAlias {
+  id: string;
+  raw_name: string;
+  client_id: string;
   created_at: string;
 }

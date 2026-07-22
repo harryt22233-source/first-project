@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Timesheet } from "@/lib/types";
 
@@ -50,9 +51,10 @@ export default async function TimesheetsGrid() {
         const count = jobCounts.get(t.id) ?? 0;
         const label = t.status === "processed" && count > 0 ? `${count} jobs` : t.status;
         return (
-          <div
+          <Link
             key={t.id}
-            className="relative aspect-square overflow-hidden rounded-lg bg-zinc-100"
+            href={`/timesheets/${t.id}`}
+            className="relative block aspect-square overflow-hidden rounded-lg bg-zinc-100"
             title={t.status === "failed" ? t.error_message ?? undefined : undefined}
           >
             {t.url && (
@@ -64,7 +66,7 @@ export default async function TimesheetsGrid() {
             >
               {label}
             </span>
-          </div>
+          </Link>
         );
       })}
     </div>
